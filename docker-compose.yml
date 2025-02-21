@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: arbitrage_scanner_db
+    restart: always
+    env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - '${POSTGRES_PORT}:5432'
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: arbitrage_scanner_app
+    env_file: ./.env
+    ports:
+      - '${NEST_APP_PORT}:3000'
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/dist
+      - /app/node_modules
+    command: ['npm', 'run', 'migrate:start:prod']
+
+volumes:
+  pgdata:
