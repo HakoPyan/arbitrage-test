@@ -7,10 +7,24 @@ interface BaseNewsPayload {
   sentiment: number;
 }
 
-interface NewsReadPayload extends BaseNewsPayload {
+export interface NewsReadPayload extends BaseNewsPayload {
   date: number;
 }
 
-interface NewsCreatePayload extends BaseNewsPayload {
+export interface NewsCreatePayload extends BaseNewsPayload {
   date: Date;
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  count: number;
+  page: number;
+  limit: number;
+}
+
+export interface NewsStatistics {
+  news_date: Date;
+  coinNews: number;
+  coinNewsRatio: number;
+  avgSentiment: number;
 }

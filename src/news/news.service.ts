@@ -2,10 +2,17 @@ import { promises as fs } from 'fs';
 import { NewsRepository } from './news.repository';
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
+import {
+  NewsCreatePayload,
+  NewsReadPayload,
+  NewsStatistics,
+  PaginatedResult,
+} from './news.types';
+import { News } from '@prisma/client';
 
 @Injectable()
 export class NewsService {
-  private readonly filePath = 'mock_news.json';
+  private readonly filePath: string = 'mock_news.json';
 
   constructor(public newsRepo: NewsRepository) {}
 
@@ -45,9 +52,9 @@ export class NewsService {
     }
   }
 
-  async findAll(page: number | string, limit: number | string) {
-    const pageNumber = Math.max(Number(page) || 1, 1);
-    const limitNumber = Math.max(Number(limit) || 10, 1);
+  async findAll(page: string, limit: string): Promise<PaginatedResult<News>> {
+    const pageNumber: number = Math.max(Number(page) || 1, 1);
+    const limitNumber: number = Math.max(Number(limit) || 10, 1);
 
     const [data, count] = await Promise.all([
       this.newsRepo.findAll(pageNumber, limitNumber),
@@ -57,11 +64,11 @@ export class NewsService {
     return { data, count, page: pageNumber, limit: limitNumber };
   }
 
-  count() {
-    return this.newsRepo.count();
-  }
-
-  async getStatistics(ticker: string, startDate: string, endDate: string) {
+  async getStatistics(
+    ticker: string,
+    startDate: string,
+    endDate: string,
+  ): Promise<NewsStatistics[]> {
     return await this.newsRepo.getStatistics(ticker, startDate, endDate);
   }
 }
